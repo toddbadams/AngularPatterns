@@ -1,0 +1,39 @@
+﻿<!doctype html>
+
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="utf-8">
+    <title>Constructor Pattern</title>
+    <meta name="description" content="JS Design Patterns">
+    <meta name="author" content="Todd B. Adams">
+</head>
+<body>
+    <div ng-controller="personController as vm">
+        <button ng-repeat="person in vm.people" ng-click="vm.selectPerson(person)">{{person.toString()}}</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js"></script>
+    <script src="repository.mdl.js"></script>
+    <script src="factory.mdl.js"></script>
+    <script>
+        angular.module('demo', ['personFactory', 'personRepository'])
+            .controller('personController', personController);
+
+        personController.$inject = ['personFactory', 'personRepository'];
+
+        function personController(personFactory, personRepository) {
+            var vm = this;
+
+            function selectPerson(person) {
+                person.last += 'X';
+                personRepository.update(person.id, person);
+            }
+
+            // activate
+            (function () {
+                vm.people = personFactory.createPeople(personRepository.fetch());
+                vm.selectPerson = selectPerson;
+            })();
+        }
+    </script>
+</body>
+</html>
